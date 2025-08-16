@@ -1,36 +1,57 @@
+# longest_path_closer.py
 import sys
-graph = {}
 
+graph = {}
+nodes = set()
+
+# 入力: "start, end, dist"
 for line in sys.stdin:
-    start, end, dist = line.strip().split(",")  # カンマで分割
+    start, end, dist = line.strip().split(",")
     start = int(start)
     end = int(end)
     dist = float(dist)
     if start not in graph:
         graph[start] = []
     graph[start].append((end, dist))
+    nodes.add(start)
+    nodes.add(end)
 
-visited = {node: False for node in graph}
+# 出次数0のノードもキー化（for文で回せるように）
+for v in nodes:
+    if v not in graph:
+        graph[v] = []
 
-# ゴール
-goal = 4
+# visitedは「経路ごと」に使う（バックトラッキングで戻す）
+visited = {node: False for node in nodes}
+
+# 最長経路の記録
+best_dist = float("-inf")
+best_path = []
 
 def dfs(current, path, total_dist):
+    global best_dist, best_path
+
     visited[current] = True
     path.append(current)
-    if current == goal:
-        print(path, total_dist)  # 経路と距離を出力
-        return path, total_dist
-    else:
-        for nxt, dist in graph[current]:
-            if not visited[nxt]:
-                dfs(nxt, path, total_dist + dist)
+
+    # ここで最長判定（ゴール固定しない）
+    if total_dist > best_dist:
+        best_dist = total_dist
+        best_path = path.copy()
+
+    # 次へ
+    for nxt, dist in graph[current]:
+        if not visited[nxt]:
+            dfs(nxt, path, total_dist + dist)
+
     # バックトラッキング
     path.pop()
     visited[current] = False
 
-# スタートは1
-result = dfs(1, [], 0.0)
-if result:
-    path, total_dist = result
-    print(path, total_dist)
+# すべてのノードを始点として試す
+for s in nodes:
+    dfs(s, [], 0.0)
+
+# 出力：最長経路に含まれる頂点IDを1行ずつ
+for v in best_path:
+    print(v)
