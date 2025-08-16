@@ -1,4 +1,3 @@
-# longest_path_closer.py
 import sys
 
 graph = {}
@@ -16,10 +15,12 @@ for line in sys.stdin:
     nodes.add(start)
     nodes.add(end)
 
+
 # 出次数0のノードもキー化（for文で回せるように）
 for v in nodes:
     if v not in graph:
         graph[v] = []
+        
 
 # visitedは「経路ごと」に使う（バックトラッキングで戻す）
 visited = {node: False for node in nodes}
@@ -37,6 +38,7 @@ def dfs(current, path, total_dist):
     # ここで最長判定（ゴール固定しない）
     if total_dist > best_dist:
         best_dist = total_dist
+        #print(best_dist) #最長距離の確認、基本コメントアウト
         best_path = path.copy()
 
     # 次へ
